@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fortune Telling</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #1a1a2e; color: white; padding-top: 50px; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #e94560; border: none; color: white; border-radius: 5px; }
+        #result { margin-top: 30px; font-size: 24px; font-style: italic; color: #0f3460; background: #fff; display: inline-block; padding: 10px; border-radius: 10px; min-width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Узнай свое предсказание</h1>
+    <button onclick="getFortune()">Получить совет</button>
+    <br>
+    <div id="result">Нажми на кнопку...</div>
+
+    <script>
+        const predictions = [
+            "Тебя ждет большой успех в делах!",
+            "Сегодня удачный день для новых начинаний.",
+            "Будь осторожен с обещаниями.",
+            "Скоро ты получишь приятное известие.",
+            "Время довериться своей интуиции."
+        ];
+
+        function getFortune() {
+            const randomIndex = Math.floor(Math.random() * predictions.length);
+            document.getElementById('result').innerText = predictions[randomIndex];
+        }
+    </script>
+</body>
+</html>
