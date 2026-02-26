@@ -1,32 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Fortune Telling</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таро • Скрытые Смыслы</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #1a1a2e; color: white; padding-top: 50px; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #e94560; border: none; color: white; border-radius: 5px; }
-        #result { margin-top: 30px; font-size: 24px; font-style: italic; color: #0f3460; background: #fff; display: inline-block; padding: 10px; border-radius: 10px; min-width: 200px; }
+        /* Основные настройки стиля — "Мистический Алтарь" */
+        body {
+            margin: 0;
+            padding: 0;
+            /* Глубокий черно-фиолетовый фон */
+            background: radial-gradient(circle at center, #1a0b2e 0%, #050505 100%);
+            color: #e0c9a6; /* Мягкое золото для текста */
+            font-family: 'Crimson Text', serif; /* Более "книжный" шрифт */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding-top: 40px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #f1d29d;
+            text-shadow: 0 0 15px rgba(241, 210, 157, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: rgba(224, 201, 166, 0.7);
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        /* Контейнер для "Рубашки" карты (без фото людей) */
+        .card-area {
+            perspective: 1000px; /* Для 3D эффекта */
+            margin-bottom: 40px;
+        }
+
+        .card {
+            width: 220px;
+            height: 380px;
+            border: 3px solid #b38b4d; /* Золотая рамка */
+            border-radius: 15px;
+            /* Таинственный узор вместо фото (используем градиент и тень) */
+            background: repeating-linear-gradient(
+                45deg,
+                #2c1a3d,
+                #2c1a3d 10px,
+                #1a0b2e 10px,
+                #1a0b2e 20px
+            );
+            box-shadow: 0 0 30px rgba(179, 139, 77, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        /* Центр карты — магический символ */
+        .card::after {
+            content: '★';
+            font-size: 5rem;
+            color: rgba(179, 139, 77, 0.2);
+        }
+
+        /* Стиль для текста предсказания, когда карта "перевернется" */
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f1d29d; /* Светлое золото */
+            color: #1a0b2e; /* Темный текст */
+            border-radius: 12px;
+            backface-visibility: hidden; /* Скрывает заднюю сторону при перевороте */
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            box-sizing: border-box;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Класс, который добавляется скриптом при клике */
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: rgba(224, 201, 166, 0.5);
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 0.8rem;
+            color: rgba(179, 139, 77, 0.4);
+        }
+
+        /* Подключаем красивый шрифт из Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&display=swap');
     </style>
 </head>
 <body>
-    <h1>Узнай свое предсказание</h1>
-    <button onclick="getFortune()">Получить совет</button>
-    <br>
-    <div id="result">Нажми на кнопку...</div>
+
+    <h1>ТАРО</h1>
+    <div class="subtitle">Прикоснитесь к древней мудрости</div>
+
+    <div class="card-area">
+        <div class="card" id="tarotCard" onclick="flipCard()">
+            <div class="card-back" id="predictionText">
+                Ваше предсказание...
+            </div>
+        </div>
+    </div>
+
+    <div class="instruction">Нажмите на карту, чтобы перевернуть её</div>
+
+    <div class="footer">
+        © 2024 Скрытые Смыслы | Онлайн расклад | Только для развлечения
+    </div>
 
     <script>
-        const predictions = [
-            "Тебя ждет большой успех в делах!",
-            "Сегодня удачный день для новых начинаний.",
-            "Будь осторожен с обещаниями.",
-            "Скоро ты получишь приятное известие.",
-            "Время довериться своей интуиции."
+        // Список предсказаний (можно расширять)
+        const fortunes = [
+            "Маг: Время брать ситуацию в свои руки. У вас есть все ресурсы.",
+            "Жрица: Ответ лежит в вашей интуиции. Тишина скажет больше слов.",
+            "Императрица: Вас ждет рост, изобилие и вдохновение. Творите!",
+            "Император: Стабильность и порядок. Время для четкого плана.",
+            "Влюбленные: Выбор сердца. Слушайте, что говорит ваша душа.",
+            "Колесо Фортуны: Цикл меняется. Удача на вашей стороне, ловите момент!",
+            "Сила: Мягкая настойчивость победит. Верьте в себя.",
+            "Отшельник: Время для внутреннего поиска и паузы от суеты.",
+            "Звезда: Надежда и исцеление. Ваши мечты имеют силу.",
+            "Солнце: Чистая радость, успех и ясность в делах."
         ];
 
-        function getFortune() {
-            const randomIndex = Math.floor(Math.random() * predictions.length);
-            document.getElementById('result').innerText = predictions[randomIndex];
+        let isFlipped = false;
+
+        function flipCard() {
+            const card = document.getElementById('tarotCard');
+            const textBlock = document.getElementById('predictionText');
+
+            if (!isFlipped) {
+                // Выбираем случайное предсказание
+                const random = Math.floor(Math.random() * fortunes.length);
+                textBlock.innerText = fortunes[random];
+                
+                // Добавляем класс для анимации переворота
+                card.classList.add('flipped');
+                isFlipped = true;
+            } else {
+                // Если карта уже перевернута, возвращаем ее обратно
+                card.classList.remove('flipped');
+                isFlipped = false;
+            }
         }
     </script>
+
 </body>
 </html>
